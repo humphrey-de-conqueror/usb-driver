@@ -1,4 +1,18 @@
 ```
+USB Device
+└── Configuration
+    └── Interface
+        ├── Alternate Setting 0
+        │   ├── Endpoint 0
+        │   ├── Endpoint 1
+        │   └── ...
+        │
+        ├── Alternate Setting 1
+        │   ├── Endpoint 0
+        │   └── Endpoint 1
+        │
+        └── ...
+	
 struct usb_device
         │
         └── struct usb_host_config
