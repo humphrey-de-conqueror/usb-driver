@@ -21,15 +21,24 @@ FLAG
 
 ### struct usb_device / struct usb_interface / interface_to_usbdev / struct usb_host_interface 
 ```
-struct usb_interface *intf;
+struct usb_interface *intf; //provide by kernel 
 
-struct usb_device *dev = interface_to_usbdev(intf);
+struct usb_device *dev = interface_to_usbdev(intf); //what we want 
 
 struct usb_host_interface *interface_detail = intf->cur_altsetting 
 
 struct usb_endpoint_descriptor *endpoint; 
 endpoint = &interface_detail->endpoint[i].desc 
 ```
+
+### register usb driver code 
+```
+static struct usb_driver my_usb_driver = {
+	.name = "my_usb", 
+	.id_table = my_usb_table, 
+	.probe = my_usb_probe, 
+	.disconnect = my_usb_disconnect, //this is a trailing comma, can dont put but it is a convension in kernel development 
+}
 
 ### URB: usb request blocks 
 1. fill in the urb form (where to send, how much data, which endpoint)
