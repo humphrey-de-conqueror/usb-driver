@@ -1,3 +1,21 @@
+```
+struct usb_device
+        │
+        └── struct usb_host_config
+                │
+                └── struct usb_interface
+                        │
+                        ├── struct usb_host_interface
+                        │       ├── endpoint[]
+                        │       └── interface descriptor
+                        │
+                        ├── struct usb_host_interface
+                        │       ├── endpoint[]
+                        │       └── interface descriptor
+                        │
+                        └── ...
+```
+
 ### printk 
 ```
 printk(LOG_LEVEL string);
