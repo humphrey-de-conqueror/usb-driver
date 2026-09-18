@@ -47,7 +47,8 @@ static ssize_t my_usb_read(struct file *file, char __user *buf, size_t count, lo
 		mydev->bulk_in_buf, 
 		min(count, (size_t)mydev->bulk_in_maxpacket), 
 		&actual_len, 
-		5000);
+		5000
+	);
 	
 	if (ret) {
 		printk(KERN_ERR "my_usb: bulk read failed: %d \n", ret);
@@ -62,10 +63,50 @@ static ssize_t my_usb_read(struct file *file, char __user *buf, size_t count, lo
 	return actual_len; 
 }
 
+static ssize_t my_usb_write(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+{
+	struct my_usb_dev *mydev = file->private_data; 
+	__u8 *kbuf; 
+	int actual_len; 
+	int ret; 
+
+	kbuf = kmalloc(count, GFP_KERNEL);
+	if (!kbuf) {
+		printk(KERN_ERR "my_usb: out of memory \n");
+		return -ENOMEM;
+	}
+
+	if (copy_from_user(kbuf, buf, count)) {
+		printk(KERN_ERR "my_usb: copy from user failed \n");
+		kfree(kbuf);
+		
+		return -EFAULT; 
+	}
+
+	ret = usb_bulk_msg(
+		mydev->udev,
+		usb_sndbulkpipe(mydev->udev, mydev->bulk_out_addr),
+		kbuf,
+		count,
+		&actual_len,
+		5000
+	);
+
+	kfree(kbuf);
+
+	if (ret) {
+		printk(KERN_ERR "my_usb: bulk write failed: %d \n", ret);
+		return ret; 
+	}
+
+	return actual_len; 
+}
+
 static struct file_operations my_usb_fops = {
 	.owner = THIS_MODULE, 
 	.open = my_usb_open,
 	.read = my_usb_read,
+	.write = my_usb_write, 
 };
 
 static int my_usb_probe(struct usb_interface *intf, const struct usb_device_id *id)
